@@ -47,7 +47,14 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-            for (var activity in activities) ActivityCard(activity: activity),
+            for (var activity in activities)
+              Dismissible(
+                onDismissed: (direction) {
+                  activities.remove(activity);
+                },
+                key: UniqueKey(),
+                child: ActivityCard(activity: activity),
+              ),
           ],
         ),
       ),

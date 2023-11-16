@@ -2,22 +2,36 @@ import 'package:flutter/material.dart';
 
 import '../models/activity.dart';
 
-class NewActivity extends StatefulWidget {
-  const NewActivity({super.key});
+class ActivityDetail<Activity> extends StatefulWidget {
+  const ActivityDetail({super.key, this.activity});
+
+  final Activity? activity;
 
   @override
-  State<NewActivity> createState() => _NewActivityState();
+  State<ActivityDetail> createState() => _ActivityDetailState();
 }
 
-class _NewActivityState extends State<NewActivity> {
+class _ActivityDetailState extends State<ActivityDetail> {
   TextEditingController activityController = TextEditingController();
   TextEditingController distanceController = TextEditingController();
 
   @override
+  void initState() {
+    Activity? activity = widget.activity;
+    super.initState();
+    if (activity != null) {
+      activityController.text = activity.type;
+      distanceController.text = activity.distance.toString();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Activity? activity = widget.activity;
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Nueva actividad"),
+          title:
+              Text((activity == null) ? "Nueva actividad" : "Edita actividad"),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -52,7 +66,9 @@ class _NewActivityState extends State<NewActivity> {
                     activity,
                   );
                 },
-                child: const Text("Añade Actividad"),
+                child: Text((activity == null)
+                    ? "Añade Actividad"
+                    : "Guarda Actividad"),
               )
             ],
           ),

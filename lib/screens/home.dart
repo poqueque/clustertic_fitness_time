@@ -20,6 +20,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Fitness Time"),
+        elevation: 4,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -47,14 +48,40 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-            for (var activity in activities) ActivityCard(activity: activity),
+            for (var activity in activities)
+              Dismissible(
+                key: UniqueKey(),
+                child: InkWell(
+                  onTap: () async {
+                    var returnedActivity = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ActivityDetail(activity: activity)));
+                    if (returnedActivity is Activity) {
+                      var index = activities.indexOf(activity);
+                      activities[index] = returnedActivity;
+                      setState(() {});
+                    }
+                  },
+                  child: ActivityCard(activity: activity),
+                ),
+                onDismissed: (_) {
+                  activities.remove(activity);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Actividad ${activity.type} eliminada"),
+                    ),
+                  );
+                },
+              ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           var activity = await Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const NewActivity()));
+              MaterialPageRoute(builder: (context) => const ActivityDetail()));
           activities.add(activity);
           setState(() {});
         },

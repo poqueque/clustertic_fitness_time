@@ -29,7 +29,7 @@ class ActivityCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  activity.type,
+                  activity.type.description,
                   style: AppStyles.dataText,
                 ),
                 Text(formattedDate),

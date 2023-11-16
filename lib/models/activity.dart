@@ -1,5 +1,12 @@
+import 'package:flutter/material.dart';
+
 class Activity {
-  final String type;
+  static List<ActivityType> types = [
+    ActivityType.walk,
+    ActivityType.run,
+    ActivityType.bike
+  ];
+  final ActivityType type;
   final DateTime date;
   final double distance;
 
@@ -8,4 +15,15 @@ class Activity {
     required this.date,
     required this.distance,
   });
+}
+
+enum ActivityType {
+  walk("Caminar", Icons.directions_walk),
+  run("Correr", Icons.directions_run),
+  bike("Bicicleta", Icons.directions_bike);
+
+  final String description;
+  final IconData iconData;
+
+  const ActivityType(this.description, this.iconData);
 }

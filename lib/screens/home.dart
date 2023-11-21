@@ -1,20 +1,15 @@
 import 'package:fitness_time/screens/profile_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/activity.dart';
+import '../models/app_data.dart';
 import '../styles/app_style.dart';
 import '../widgets/activity_card.dart';
-import 'new_activity.dart';
+import 'activity_detail.dart';
 
-class Home extends StatefulWidget {
+class Home extends StatelessWidget {
   const Home({super.key});
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  List<Activity> activities = [];
 
   @override
   Widget build(BuildContext context) {
@@ -80,109 +75,111 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              "Actividades",
-              style: AppStyles.bigTitle,
-            ),
-            if (activities.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(80.0),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.run_circle_outlined,
-                      size: 120,
-                      color: Colors.black45,
-                    ),
-                    Text(
-                      "No hay actividades. Pulsa + per añadir una.",
-                      style: AppStyles.subTitle,
-                      textAlign: TextAlign.center,
-                    )
-                  ],
-                ),
+      body: Consumer<AppData>(builder: (context, data, child) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Text(
+                "Actividades",
+                style: AppStyles.bigTitle,
               ),
-            for (var activity in activities)
-              Dismissible(
-                key: UniqueKey(),
-                child: InkWell(
-                  onTap: () async {
-                    var returnedActivity = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ActivityDetail(activity: activity)));
-                    if (returnedActivity is Activity) {
-                      var index = activities.indexOf(activity);
-                      activities[index] = returnedActivity;
-                      setState(() {});
-                    }
-                  },
-                  onLongPress: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ListTile(
-                              leading: const Icon(Icons.edit),
-                              title: const Text("Editar actividad"),
-                              onTap: () async {
-                                var returnedActivity = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ActivityDetail(
-                                            activity: activity)));
-                                if (returnedActivity is Activity) {
-                                  var index = activities.indexOf(activity);
-                                  activities[index] = returnedActivity;
-                                  setState(() {});
-                                }
-                                Navigator.pop(context);
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.delete),
-                              title: const Text("Eliminar actividad"),
-                              onTap: () {
-                                Navigator.pop(context);
-                                activities.remove(activity);
-                                setState(() {});
-                              },
-                            ),
-                          ],
-                        );
-                      },
+              if (data.activities.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(80.0),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.run_circle_outlined,
+                        size: 120,
+                        color: Colors.black45,
+                      ),
+                      Text(
+                        "No hay actividades. Pulsa + per añadir una.",
+                        style: AppStyles.subTitle,
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                ),
+              for (var activity in data.activities)
+                Dismissible(
+                  key: UniqueKey(),
+                  child: InkWell(
+                    onTap: () async {
+                      var returnedActivity = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ActivityDetail(activity: activity)));
+                      if (returnedActivity is Activity) {
+                        data.editActivity(activity, returnedActivity);
+                      }
+                    },
+                    onLongPress: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.edit),
+                                title: const Text("Editar actividad"),
+                                onTap: () async {
+                                  Navigator.pop(context);
+                                  var returnedActivity = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ActivityDetail(
+                                              activity: activity)));
+                                  if (returnedActivity is Activity) {
+                                    data.editActivity(
+                                        activity, returnedActivity);
+                                  }
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.delete),
+                                title: const Text("Eliminar actividad"),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  data.removeActivity(activity);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: ActivityCard(activity: activity),
+                  ),
+                  onDismissed: (_) {
+                    data.removeActivity(activity);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            "Actividad ${activity.type.description} eliminada"),
+                      ),
                     );
                   },
-                  child: ActivityCard(activity: activity),
                 ),
-                onDismissed: (_) {
-                  activities.remove(activity);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Actividad ${activity.type} eliminada"),
-                    ),
-                  );
-                },
-              ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          var activity = await Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const ActivityDetail()));
-          activities.add(activity);
-          setState(() {});
-        },
-        child: const Icon(Icons.add),
-      ),
+            ],
+          ),
+        );
+      }),
+      floatingActionButton: Consumer<AppData>(builder: (context, data, child) {
+        return FloatingActionButton(
+          onPressed: () async {
+            var activity = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ActivityDetail()));
+            data.addActivity(activity);
+          },
+          child: const Icon(Icons.add),
+        );
+      }),
     );
   }
 }

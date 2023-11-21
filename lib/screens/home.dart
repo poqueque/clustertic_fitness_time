@@ -122,6 +122,44 @@ class _HomeState extends State<Home> {
                       setState(() {});
                     }
                   },
+                  onLongPress: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.edit),
+                              title: const Text("Editar actividad"),
+                              onTap: () async {
+                                var returnedActivity = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ActivityDetail(
+                                            activity: activity)));
+                                if (returnedActivity is Activity) {
+                                  var index = activities.indexOf(activity);
+                                  activities[index] = returnedActivity;
+                                  setState(() {});
+                                }
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.delete),
+                              title: const Text("Eliminar actividad"),
+                              onTap: () {
+                                Navigator.pop(context);
+                                activities.remove(activity);
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                   child: ActivityCard(activity: activity),
                 ),
                 onDismissed: (_) {

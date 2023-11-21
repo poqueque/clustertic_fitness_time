@@ -10,6 +10,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  var height = 150.0;
+  var weight = 55.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,10 +24,13 @@ class _ProfilePageState extends State<ProfilePage> {
           children: <Widget>[
             const Padding(
               padding: EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                radius: 100,
-                backgroundImage: NetworkImage(
-                  "https://randomuser.me/api/portraits/women/44.jpg",
+              child: Hero(
+                tag: 'profile',
+                child: CircleAvatar(
+                  radius: 100,
+                  backgroundImage: NetworkImage(
+                    "https://randomuser.me/api/portraits/women/44.jpg",
+                  ),
                 ),
               ),
             ),
@@ -64,13 +69,16 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 const Text("Height"),
                 Slider(
-                  min: 100,
-                  max: 250,
-                  value: 150,
+                  min: 140,
+                  max: 210,
+                  value: height,
                   activeColor: AppStyles.heliotrope,
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    height = value;
+                    setState(() {});
+                  },
                 ),
-                const Text("150 cm"),
+                Text("${height.round()} cm"),
               ],
             ),
             Row(
@@ -79,12 +87,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 const Text("Weight"),
                 Slider(
                   min: 40,
-                  max: 100,
-                  value: 55,
+                  max: 120,
+                  value: weight,
                   activeColor: AppStyles.heliotrope,
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    weight = value;
+                    setState(() {});
+                  },
                 ),
-                const Text("55 kg"),
+                Text("${weight.round()} kg"),
               ],
             )
           ],

@@ -43,7 +43,8 @@ class ActivityCard extends StatelessWidget {
                   style: AppStyles.dataText,
                 ),
                 Text(
-                  activity.duration.toString().substring(2, 7),
+                  "${activity.durationMinutes.toString().padLeft(2, "0")}"
+                  ":${activity.durationSeconds.toString().padLeft(2, "0")}",
                   style: AppStyles.dataText,
                 ),
               ],

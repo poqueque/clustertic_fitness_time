@@ -9,14 +9,15 @@ class Activity {
   final ActivityType type;
   final DateTime date;
   final double distance;
-
-  final Duration duration;
+  final int durationMinutes;
+  final int durationSeconds;
 
   Activity({
     required this.type,
     required this.date,
     required this.distance,
-    required this.duration,
+    required this.durationMinutes,
+    required this.durationSeconds,
   });
 }
 

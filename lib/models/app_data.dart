@@ -24,7 +24,8 @@ class AppData extends ChangeNotifier {
   String getTotalTime() {
     Duration total = Duration.zero;
     for (var activity in activities) {
-      total += activity.duration;
+      total += Duration(
+          minutes: activity.durationMinutes, seconds: activity.durationSeconds);
     }
     return "${total.inHours.toString()}h "
         "${(total.inMinutes % 60).toString().padLeft(2, "0")}'";

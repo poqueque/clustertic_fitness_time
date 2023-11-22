@@ -28,9 +28,9 @@ class _ActivityDetailState extends State<ActivityDetail> {
     if (activity != null) {
       selectedItem = Activity.types.indexOf(activity.type);
       distanceController.text = activity.distance.toString();
-      minutesController.text = activity.duration.inMinutes.toString();
+      minutesController.text = activity.durationMinutes.toString();
       secondsController.text =
-          (activity.duration.inSeconds % 60).toString().padLeft(2, "0");
+          activity.durationSeconds.toString().padLeft(2, "0");
     }
   }
 
@@ -90,7 +90,7 @@ class _ActivityDetailState extends State<ActivityDetail> {
                       ),
                       textAlign: TextAlign.center,
                       style: AppStyles.bigTitle,
-                      keyboardType: TextInputType.numberWithOptions(),
+                      keyboardType: const TextInputType.numberWithOptions(),
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
@@ -141,19 +141,21 @@ class _ActivityDetailState extends State<ActivityDetail> {
                         minutesController.text.isNotEmpty &&
                         secondsController.text.isNotEmpty)
                     ? () {
+                        int minutes = int.tryParse(minutesController.text) ?? 0;
+                        int seconds = int.tryParse(secondsController.text) ?? 0;
+                        duration = Duration(minutes: minutes, seconds: seconds);
+                        minutes = duration.inMinutes;
+                        seconds = duration.inSeconds - (minutes * 60);
                         var distance = distanceController.text;
                         var activity = Activity(
-                            type: Activity.types[selectedItem],
-                            date: DateTime.now(),
-                            distance: double.tryParse(
-                                    distance.replaceAll(",", ".")) ??
-                                0,
-                            duration: Duration(
-                              minutes:
-                                  int.tryParse(minutesController.text) ?? 0,
-                              seconds:
-                                  int.tryParse(secondsController.text) ?? 0,
-                            ));
+                          type: Activity.types[selectedItem],
+                          date: DateTime.now(),
+                          distance:
+                              double.tryParse(distance.replaceAll(",", ".")) ??
+                                  0,
+                          durationMinutes: minutes,
+                          durationSeconds: seconds,
+                        );
                         Navigator.pop(
                           context,
                           activity,

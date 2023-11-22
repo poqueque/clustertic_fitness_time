@@ -10,10 +10,13 @@ class Activity {
   final DateTime date;
   final double distance;
 
+  final Duration duration;
+
   Activity({
     required this.type,
     required this.date,
     required this.distance,
+    required this.duration,
   });
 }
 

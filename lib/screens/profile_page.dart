@@ -1,6 +1,8 @@
 import 'package:fitness_time/styles/app_style.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../models/app_data.dart';
 import '../widgets/data_card.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -14,6 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
   var weight = 55.0;
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<AppData>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile"),
@@ -43,23 +46,23 @@ class _ProfilePageState extends State<ProfilePage> {
               style: AppStyles.subTitle,
             ),
             const SizedBox(height: 32),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 DataCard(
                   iconData: Icons.access_alarm,
                   titleLabel: "Time",
-                  contentLabel: "2h 45'",
+                  contentLabel: data.getTotalTime(),
                 ),
                 DataCard(
                   iconData: Icons.place,
                   titleLabel: "Km",
-                  contentLabel: "212,4",
+                  contentLabel: data.getTotalDistance(),
                 ),
                 DataCard(
                   iconData: Icons.home,
                   titleLabel: "Activities",
-                  contentLabel: "42",
+                  contentLabel: data.getTotalActivities(),
                 ),
               ],
             ),

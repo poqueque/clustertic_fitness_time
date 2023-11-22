@@ -13,8 +13,11 @@ class ActivityDetail<Activity> extends StatefulWidget {
 }
 
 class _ActivityDetailState extends State<ActivityDetail> {
-  TextEditingController activityController = TextEditingController();
   TextEditingController distanceController = TextEditingController();
+  TextEditingController minutesController = TextEditingController();
+  TextEditingController secondsController = TextEditingController();
+
+  Duration duration = Duration.zero;
 
   int selectedItem = -1;
 
@@ -25,6 +28,9 @@ class _ActivityDetailState extends State<ActivityDetail> {
     if (activity != null) {
       selectedItem = Activity.types.indexOf(activity.type);
       distanceController.text = activity.distance.toString();
+      minutesController.text = activity.duration.inMinutes.toString();
+      secondsController.text =
+          (activity.duration.inSeconds % 60).toString().padLeft(2, "0");
     }
   }
 
@@ -69,18 +75,38 @@ class _ActivityDetailState extends State<ActivityDetail> {
                 ],
               ),
               const SizedBox(height: 16),
-              const Align(
-                  alignment: Alignment.centerLeft, child: Text("Distancia")),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 300,
+                    child: TextField(
+                      controller: distanceController,
+                      decoration: const InputDecoration(
+                        hintText: "0",
+                        label: Text("Distancia"),
+                        suffixText: "Km",
+                      ),
+                      textAlign: TextAlign.center,
+                      style: AppStyles.bigTitle,
+                      keyboardType: TextInputType.numberWithOptions(),
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
                     width: 100,
                     child: TextField(
-                      controller: distanceController,
+                      controller: minutesController,
                       decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
+                        hintText: "0",
+                        label: Text("Minutos"),
                       ),
                       textAlign: TextAlign.center,
                       style: AppStyles.bigTitle,
@@ -88,36 +114,52 @@ class _ActivityDetailState extends State<ActivityDetail> {
                       onChanged: (_) => setState(() {}),
                     ),
                   ),
-                  const Column(
-                    children: [
-                      Text(
-                        "Km",
-                        style: AppStyles.bigTitle,
+                  const Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text(":", style: AppStyles.bigTitle),
+                  ),
+                  SizedBox(
+                    width: 100,
+                    child: TextField(
+                      controller: secondsController,
+                      decoration: const InputDecoration(
+                        hintText: "0",
+                        label: Text("Segundos"),
                       ),
-                      SizedBox(
-                        height: 11,
-                      )
-                    ],
+                      textAlign: TextAlign.center,
+                      style: AppStyles.bigTitle,
+                      keyboardType: TextInputType.number,
+                      onChanged: (_) => setState(() {}),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed:
-                    (selectedItem >= 0 && distanceController.text.isNotEmpty)
-                        ? () {
-                            var distance = distanceController.text;
-                            var activity = Activity(
-                              type: Activity.types[selectedItem],
-                              date: DateTime.now(),
-                              distance: double.tryParse(distance) ?? 0,
-                            );
-                            Navigator.pop(
-                              context,
-                              activity,
-                            );
-                          }
-                        : null,
+                onPressed: (selectedItem >= 0 &&
+                        distanceController.text.isNotEmpty &&
+                        minutesController.text.isNotEmpty &&
+                        secondsController.text.isNotEmpty)
+                    ? () {
+                        var distance = distanceController.text;
+                        var activity = Activity(
+                            type: Activity.types[selectedItem],
+                            date: DateTime.now(),
+                            distance: double.tryParse(
+                                    distance.replaceAll(",", ".")) ??
+                                0,
+                            duration: Duration(
+                              minutes:
+                                  int.tryParse(minutesController.text) ?? 0,
+                              seconds:
+                                  int.tryParse(secondsController.text) ?? 0,
+                            ));
+                        Navigator.pop(
+                          context,
+                          activity,
+                        );
+                      }
+                    : null,
                 child: Text((activity == null)
                     ? "Añade Actividad"
                     : "Guarda Actividad"),

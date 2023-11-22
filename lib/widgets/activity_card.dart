@@ -18,10 +18,10 @@ class ActivityCard extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Icon(
-                Icons.run_circle_outlined,
+                activity.type.iconData,
                 size: 32,
               ),
             ),
@@ -36,9 +36,17 @@ class ActivityCard extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Text(
-              "${activity.distance} km",
-              style: AppStyles.dataText,
+            Column(
+              children: [
+                Text(
+                  "${activity.distance} km",
+                  style: AppStyles.dataText,
+                ),
+                Text(
+                  activity.duration.toString().substring(2, 7),
+                  style: AppStyles.dataText,
+                ),
+              ],
             ),
           ],
         ),

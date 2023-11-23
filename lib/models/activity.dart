@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 
+part 'activity.g.dart';
+
+@collection
 class Activity {
   static List<ActivityType> types = [
     ActivityType.walk,
     ActivityType.run,
     ActivityType.bike
   ];
+  Id id = Isar.autoIncrement;
+  @enumerated
   final ActivityType type;
   final DateTime date;
   final double distance;

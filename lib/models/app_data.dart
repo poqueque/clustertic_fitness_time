@@ -1,23 +1,36 @@
 import 'package:flutter/foundation.dart';
 
+import '../services/database.dart';
 import 'activity.dart';
 
 class AppData extends ChangeNotifier {
   List<Activity> activities = [];
 
+  AppData() {
+    init();
+  }
+
+  Future<void> init() async {
+    activities = await Database.instance.getAllActivities();
+    notifyListeners();
+  }
+
   void addActivity(Activity activity) {
     activities.add(activity);
+    Database.instance.updateActivity(activity);
     notifyListeners();
   }
 
   void removeActivity(Activity activity) {
     activities.remove(activity);
+    Database.instance.removeActivity(activity);
     notifyListeners();
   }
 
   void editActivity(Activity activity, Activity newActivity) {
     var index = activities.indexOf(activity);
     activities[index] = newActivity;
+    Database.instance.updateActivity(activity);
     notifyListeners();
   }
 
